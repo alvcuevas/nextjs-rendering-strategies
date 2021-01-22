@@ -13,4 +13,5 @@
 ## Static Site Generation (SSG)
 
 1. Install dependencies: `cd ssg && yarn install`
-2. Run app on browser: `yarn dev`
+2. Build app: `yarn build`
+3. Run static site on browser: `yarn start`
