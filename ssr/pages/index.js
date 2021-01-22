@@ -1,22 +1,28 @@
 import Head from "next/head";
 import { useState } from "react";
 import axios from "axios";
-import { useQuery } from "react-query";
 import Character from "../components/Character/Character";
 import { Container, CssBaseline, TextField, Grid } from "@material-ui/core";
 
 import styles from "../styles/Home.module.css";
 
-export const fetchCharacters = async (name) => {
-  const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_RICK_MORTY_API}?name=${name}`
-  );
-  return data.results;
-};
-
-export default function Home() {
+export default function Home({ data }) {
   const [query, setQuery] = useState("");
-  const { data } = useQuery(["q", query], () => fetchCharacters(query));
+  const [characters, setCharacters] = useState(data);
+
+  const handleSearch = (e) => {
+    const name = e.target.value;
+    setQuery(name);
+
+    !!name
+      ? filterCharacters(name)
+      : setCharacters(data);
+  }
+
+  const filterCharacters = (name) => {
+    const filtered = characters.filter(character => character.name.toLowerCase().includes(name));
+    setCharacters(filtered);
+  }
 
   return (
     <div className={styles.container}>
@@ -37,22 +43,20 @@ export default function Home() {
           style={{ margin: 8 }}
           fullWidth
           margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
+          InputLabelProps={{ shrink: true }}
           value={query}
-          onChange={(evt) => setQuery(evt.target.value)}
+          onChange={handleSearch}
           variant="outlined"
         />
-        {data && (
           <Grid
             container
             direction="row"
             justify="flex-start"
             alignItems="center"
           >
-            {data.map((character) => (
+            {characters && characters.map(character => (
               <Character
+                key={character.key}
                 id={character.id}
                 name={character.name}
                 type={character.type}
@@ -64,8 +68,17 @@ export default function Home() {
               />
             ))}
           </Grid>
-        )}
       </Container>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  const { data: { results } } = await axios.get(`${process.env.NEXT_PUBLIC_RICK_MORTY_API}`);
+
+  return {
+    props: {
+      data: results
+    },
+  };
 }

@@ -12,19 +12,19 @@ const dataView = ({ characters }) => {
           justify="flex-start"
           alignItems="center"
         >
-          {characters &&
-            characters.map((character) => (
-              <Character
-                id={character.id}
-                name={character.name}
-                type={character.type}
-                gender={character.gender}
-                species={character.species}
-                status={character.status}
-                image={character.image}
-                href={false}
-              />
-            ))}
+          {characters && characters.map(character => (
+            <Character
+              key={character.id}
+              id={character.id}
+              name={character.name}
+              type={character.type}
+              gender={character.gender}
+              species={character.species}
+              status={character.status}
+              image={character.image}
+              href={false}
+            />
+          ))}
         </Grid>
       </Container>
     </>
